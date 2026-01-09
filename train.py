@@ -13,13 +13,12 @@ os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 data = pd.read_csv(DATASET_PATH, sep=";")
 
-selected_features = ["alcohol", "sulphates", "volatile acidity"]
-X = data[selected_features]
+X = data.drop("quality", axis=1)
 y = data["quality"]
 
 MODEL_TYPE = "rf"
 USE_SCALER = False
-TEST_SIZE = 0.2
+TEST_SIZE = 0.3
 
 X_train, X_test, y_train, y_test = train_test_split(
     X, y, test_size=TEST_SIZE, random_state=42
@@ -45,7 +44,6 @@ joblib.dump(model, f"{OUTPUT_DIR}/model.pkl")
 with open(f"{OUTPUT_DIR}/results.json", "w") as f:
     json.dump({
         "model": MODEL_TYPE,
-        "features": selected_features,
         "test_size": TEST_SIZE,
         "mse": mse,
         "r2": r2
