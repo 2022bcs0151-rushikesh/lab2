@@ -18,17 +18,18 @@ selected = corr[corr > 0.1].index
 X = data[selected].drop("quality", axis=1)
 y = data["quality"]
 
-MODEL_TYPE = "linear"
-USE_SCALER = True
-TEST_SIZE = 0.3
+MODEL_TYPE = "rf"
+USE_SCALER = False
+TEST_SIZE = 0.2
 
 X_train, X_test, y_train, y_test = train_test_split(
     X, y, test_size=TEST_SIZE, random_state=42
 )
 
-model = LinearRegression()
-model.fit(X_train, y_train)
-
+model = RandomForestRegressor(
+    n_estimators=50,
+    random_state=42
+)
 y_pred = model.predict(X_test)
 
 mse = mean_squared_error(y_test, y_pred)
