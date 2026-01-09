@@ -28,9 +28,11 @@ X_train, X_test, y_train, y_test = train_test_split(
 )
 
 model = RandomForestRegressor(
-    n_estimators=50,
+    n_estimators=100,
+    max_depth=15,
     random_state=42
 )
+
 y_pred = model.predict(X_test)
 
 mse = mean_squared_error(y_test, y_pred)
