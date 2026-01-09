@@ -4,7 +4,6 @@ import os
 import joblib
 
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error, r2_score
 
@@ -14,16 +13,14 @@ os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 data = pd.read_csv(DATASET_PATH, sep=";")
 
-X = data.drop("quality", axis=1)
+corr = data.corr()["quality"].abs()
+selected = corr[corr > 0.1].index
+X = data[selected].drop("quality", axis=1)
 y = data["quality"]
 
 MODEL_TYPE = "linear"
-USE_SCALER = True
+USE_SCALER = False
 TEST_SIZE = 0.2
-
-if USE_SCALER:
-    scaler = StandardScaler()
-    X = scaler.fit_transform(X)
 
 X_train, X_test, y_train, y_test = train_test_split(
     X, y, test_size=TEST_SIZE, random_state=42
@@ -45,7 +42,7 @@ joblib.dump(model, f"{OUTPUT_DIR}/model.pkl")
 with open(f"{OUTPUT_DIR}/results.json", "w") as f:
     json.dump({
         "model": MODEL_TYPE,
-        "scaler": USE_SCALER,
+        "features": list(X.columns),
         "test_size": TEST_SIZE,
         "mse": mse,
         "r2": r2
